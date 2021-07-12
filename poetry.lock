@@ -1,4 +1,20 @@
 [[package]]
+name = "certifi"
+version = "2021.5.30"
+description = "Python package for providing Mozilla's CA Bundle."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "chardet"
+version = "4.0.0"
+description = "Universal encoding detector for Python 2 and 3"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[[package]]
 name = "click"
 version = "7.1.2"
 description = "Composable command line interface toolkit"
@@ -7,12 +23,60 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "idna"
+version = "2.10"
+description = "Internationalized Domain Names in Applications (IDNA)"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[[package]]
+name = "python-slugify"
+version = "5.0.2"
+description = "A Python Slugify application that handles Unicode"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+text-unidecode = ">=1.3"
+
+[package.extras]
+unidecode = ["Unidecode (>=1.1.1)"]
+
+[[package]]
 name = "pytube"
 version = "10.9.2"
 description = "Python 3 library for downloading YouTube Videos."
 category = "main"
 optional = false
 python-versions = ">=3.6"
+
+[[package]]
+name = "requests"
+version = "2.25.1"
+description = "Python HTTP for Humans."
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+
+[package.dependencies]
+certifi = ">=2017.4.17"
+chardet = ">=3.0.2,<5"
+idna = ">=2.5,<3"
+urllib3 = ">=1.21.1,<1.27"
+
+[package.extras]
+security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)"]
+socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
+
+[[package]]
+name = "text-unidecode"
+version = "1.3"
+description = "The most basic Text::Unidecode port"
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "typer"
@@ -31,21 +95,62 @@ all = ["colorama (>=0.4.3,<0.5.0)", "shellingham (>=1.3.0,<2.0.0)"]
 dev = ["autoflake (>=1.3.1,<2.0.0)", "flake8 (>=3.8.3,<4.0.0)"]
 doc = ["mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=5.4.0,<6.0.0)", "markdown-include (>=0.5.1,<0.6.0)"]
 
+[[package]]
+name = "urllib3"
+version = "1.26.6"
+description = "HTTP library with thread-safe connection pooling, file post, and more."
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
+
+[package.extras]
+brotli = ["brotlipy (>=0.6.0)"]
+secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
+socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
+
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "77e838808644c6892ebc68cc2564645ec575c16f2ebb19b71456c2b843773d1d"
+content-hash = "00e018df3d8c8595099febbcf96949eb00b21fe41410f986924f56f13ba0d510"
 
 [metadata.files]
+certifi = [
+    {file = "certifi-2021.5.30-py2.py3-none-any.whl", hash = "sha256:50b1e4f8446b06f41be7dd6338db18e0990601dce795c2b1686458aa7e8fa7d8"},
+    {file = "certifi-2021.5.30.tar.gz", hash = "sha256:2bbf76fd432960138b3ef6dda3dde0544f27cbf8546c458e60baf371917ba9ee"},
+]
+chardet = [
+    {file = "chardet-4.0.0-py2.py3-none-any.whl", hash = "sha256:f864054d66fd9118f2e67044ac8981a54775ec5b67aed0441892edb553d21da5"},
+    {file = "chardet-4.0.0.tar.gz", hash = "sha256:0d6f53a15db4120f2b08c94f11e7d93d2c911ee118b6b30a04ec3ee8310179fa"},
+]
 click = [
     {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},
     {file = "click-7.1.2.tar.gz", hash = "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a"},
+]
+idna = [
+    {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
+    {file = "idna-2.10.tar.gz", hash = "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6"},
+]
+python-slugify = [
+    {file = "python-slugify-5.0.2.tar.gz", hash = "sha256:f13383a0b9fcbe649a1892b9c8eb4f8eab1d6d84b84bb7a624317afa98159cab"},
+    {file = "python_slugify-5.0.2-py2.py3-none-any.whl", hash = "sha256:6d8c5df75cd4a7c3a2d21e257633de53f52ab0265cd2d1dc62a730e8194a7380"},
 ]
 pytube = [
     {file = "pytube-10.9.2-py3-none-any.whl", hash = "sha256:55df67d864436f8ddad7c91c37f5781793cd7b947be3d6e561282564a18f4d4c"},
     {file = "pytube-10.9.2.tar.gz", hash = "sha256:d90f50889e0765a7ba819f139f30d5f77486de036b57622851ea148a7ff50baf"},
 ]
+requests = [
+    {file = "requests-2.25.1-py2.py3-none-any.whl", hash = "sha256:c210084e36a42ae6b9219e00e48287def368a26d03a048ddad7bfee44f75871e"},
+    {file = "requests-2.25.1.tar.gz", hash = "sha256:27973dd4a904a4f13b263a19c866c13b92a39ed1c964655f025f3f8d3d75b804"},
+]
+text-unidecode = [
+    {file = "text-unidecode-1.3.tar.gz", hash = "sha256:bad6603bb14d279193107714b288be206cac565dfa49aa5b105294dd5c4aab93"},
+    {file = "text_unidecode-1.3-py2.py3-none-any.whl", hash = "sha256:1311f10e8b895935241623731c2ba64f4c455287888b18189350b67134a822e8"},
+]
 typer = [
     {file = "typer-0.3.2-py3-none-any.whl", hash = "sha256:ba58b920ce851b12a2d790143009fa00ac1d05b3ff3257061ff69dbdfc3d161b"},
     {file = "typer-0.3.2.tar.gz", hash = "sha256:5455d750122cff96745b0dec87368f56d023725a7ebc9d2e54dd23dc86816303"},
+]
+urllib3 = [
+    {file = "urllib3-1.26.6-py2.py3-none-any.whl", hash = "sha256:39fb8672126159acb139a7718dd10806104dec1e2f0f6c88aab05d17df10c8d4"},
+    {file = "urllib3-1.26.6.tar.gz", hash = "sha256:f57b4c16c62fa2760b7e3d97c35b255512fb6b59a259730f36ba32ce9f8e342f"},
 ]

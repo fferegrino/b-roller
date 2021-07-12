@@ -4,11 +4,19 @@ version = "0.0.0"
 description = "My editing pal"
 authors = ["Antonio Feregrino <antonio.feregrino@gmail.com>"]
 license = "MIT"
+packages = [
+    { include = "editingpal" },
+]
+
+[tool.poetry.scripts]
+editingpal = 'editingpal.__main__:app'
 
 [tool.poetry.dependencies]
 python = "^3.8"
 pytube = "^10.9.2"
 typer = "^0.3.2"
+python-slugify = "^5.0.2"
+requests = "^2.25.1"
 
 [tool.poetry.dev-dependencies]
 
