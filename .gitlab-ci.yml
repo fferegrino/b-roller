@@ -49,4 +49,4 @@ publish:
     refs:
       - tags
       - main
-  script: poetry publish --build --dry-run
+  script: poetry publish -u __token__ -p ${PYPI_PASSWORD} --build --dry-run
