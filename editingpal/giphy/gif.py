@@ -1,4 +1,5 @@
 import os
+
 import requests
 
 GIPHY_API_KEY = os.getenv("GIPHY_API_KEY")
@@ -12,7 +13,7 @@ def download_giphy(url):
 
     if GIPHY_API_KEY:
         gif_info = requests.get(API_TEMPLATE.format(gif_id)).json()
-        for field in ["hd", 'original']:
+        for field in ["hd", "original"]:
             if entry := gif_info["data"]["images"].get(field):
                 url = entry["mp4"]
                 break
@@ -21,5 +22,5 @@ def download_giphy(url):
         url = DEFAULT_TEMPLATE.format(gif_id)
         extension = "gif"
 
-    with open(f"{gif_name}-{gif_id}.{extension}", 'wb') as wb:
+    with open(f"{gif_name}-{gif_id}.{extension}", "wb") as wb:
         wb.write(requests.get(url).content)

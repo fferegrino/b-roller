@@ -10,6 +10,7 @@ packages = [
 
 [tool.poetry.scripts]
 editingpal = 'editingpal.__main__:app'
+dwpal = 'editingpal.__main__:app'
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -19,7 +20,46 @@ python-slugify = "^5.0.2"
 requests = "^2.25.1"
 
 [tool.poetry.dev-dependencies]
+black = "^20.*"
+flake8 = "^3.9.2"
+isort = "^5.9.2"
+pyproject-flake8 = "^0.0.1-alpha.2"
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+  )/
+)
+'''
+
+[tool.flake8]
+max-line-length = 120
+per-file-ignores = [
+]
+exclude = [
+]
+
+[tool.isort]
+skip_glob = [
+]
+
+# Structure
+default_section = "THIRDPARTY"
+known_first_party = "editingpal"
+
+# Import Style
+line_length = 120
+force_grid_wrap = false
+use_parentheses = true
+include_trailing_comma = true
+combine_as_imports = true
+multi_line_output = 3
