@@ -50,4 +50,4 @@ publish:
   except:
     - branches
   script:
-    - poetry publish -u __token__ -p $PYPI_PASSWORD --build
+    - poetry publish -u __token__ -p ${PYPI_PASSWORD} --build
