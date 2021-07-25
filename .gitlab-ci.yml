@@ -1,0 +1,52 @@
+# Global --------------------------
+
+variables:
+  PIP_CACHE_DIR: "${CI_PROJECT_DIR}/.cache/pip"
+
+cache:
+  key: "${CI_JOB_NAME}"
+  paths:
+    - .cache/pip
+    - .venv
+
+stages:
+  - quality
+  - tests
+  - publish
+
+# Jobs templates ------------------
+
+.install-deps-template: &install-deps
+  before_script:
+    - pip install poetry
+    - poetry --version
+    - poetry config virtualenvs.in-project true
+    - poetry install -vv
+
+.quality-template: &quality
+  <<: *install-deps
+  image: python:3.8
+  stage: quality
+
+.test-template: &test
+  <<: *install-deps
+  stage: tests
+  script: make test
+
+check:
+  <<: *quality
+  script: make lint
+
+python3.8:
+  <<: *test
+  image: python:3.8
+
+publish:
+  <<: *install-deps
+  image: python:3.8
+  stage: publish
+  only:
+    refs:
+      - tags
+      - main
+  script: poetry publish --build --dry-run
