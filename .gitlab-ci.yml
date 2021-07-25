@@ -49,4 +49,4 @@ publish:
     - tags
   except:
     - branches
-  script: poetry publish -u __token__ -p $PYPI_PASSWORD --build
+  script: poetry publish -u __token__ -p "$PYPI_PASSWORD" --build
