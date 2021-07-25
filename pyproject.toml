@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "editing-pal"
-version = "0.0.1"
+version = "0.0.2"
 description = "My editing pal"
 authors = ["Antonio Feregrino <antonio.feregrino@gmail.com>"]
 license = "MIT"
@@ -23,7 +23,7 @@ requests = "^2.25.1"
 black = "^20.*"
 flake8 = "^3.9.2"
 isort = "^5.9.2"
-pyproject-flake8 = "^0.0.1-alpha.2"
+pyproject-flake8 = "^0.0.2-alpha.2"
 bump2version = "^1.0.1"
 
 
