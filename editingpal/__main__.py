@@ -1,7 +1,8 @@
 import typer
 from pytube import YouTube
 from slugify import slugify
-import requests
+
+from editingpal.giphy.gif import download_giphy
 
 app = typer.Typer(add_completion=False)
 
@@ -27,10 +28,8 @@ def audio(url: str):
 
 @app.command()
 def gif(url: str):
-    gif_name, _, gif_id = url.split("/")[-1].rpartition("-")
-    url = f"https://media.giphy.com/media/{gif_id}/source.gif"
-    with open(f"{gif_name}-{gif_id}.gif", 'wb') as wb:
-        wb.write(requests.get(url).content)
+    download_giphy(url)
+
 
 
 if __name__ == "__main__":
