@@ -46,7 +46,7 @@ publish:
   image: python:3.8
   stage: publish
   only:
-    refs:
-      - tags
-      - main
+    - tags
+  except:
+    - branches
   script: poetry publish -u __token__ -p ${PYPI_PASSWORD} --build --dry-run
