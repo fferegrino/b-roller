@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "editing-pal"
-version = "0.0.8"
+version = "0.0.9"
 description = "My editing pal"
 authors = ["Antonio Feregrino <antonio.feregrino@gmail.com>"]
 license = "MIT"
