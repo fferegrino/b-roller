@@ -14,7 +14,7 @@ dwpal = 'editingpal.__main__:app'
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pytube = "^10.9.2"
+pytube = "11.0.0"
 typer = "^0.3.2"
 python-slugify = "^5.0.2"
 requests = "^2.25.1"
