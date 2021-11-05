@@ -1,3 +1,7 @@
+from pytube import YouTube
+from slugify import slugify
+
+
 def get_streams(url, only_video):
     yt = YouTube(url)
     title = slugify(yt.title)
