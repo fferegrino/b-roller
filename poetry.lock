@@ -166,7 +166,7 @@ unidecode = ["Unidecode (>=1.1.1)"]
 
 [[package]]
 name = "pytube"
-version = "11.0.0"
+version = "11.0.1"
 description = "Python 3 library for downloading YouTube Videos."
 category = "main"
 optional = false
@@ -255,7 +255,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "e51b96ab9e6174e36e78d512a68c0ccb5315396c5d3520230e0346c99fd587e4"
+content-hash = "b48fd669ea03afb9a782a5fd1696c9959b1e02c2ecbff8d7e05c272b8b92bc0d"
 
 [metadata.files]
 appdirs = [
@@ -323,8 +323,8 @@ python-slugify = [
     {file = "python_slugify-5.0.2-py2.py3-none-any.whl", hash = "sha256:6d8c5df75cd4a7c3a2d21e257633de53f52ab0265cd2d1dc62a730e8194a7380"},
 ]
 pytube = [
-    {file = "pytube-11.0.0-py3-none-any.whl", hash = "sha256:b2b82e831cc2dbf22202c3ecfd09b5af33a253e7a443be9f747ce506f6e88f1f"},
-    {file = "pytube-11.0.0.tar.gz", hash = "sha256:9e523a680814e1d6a754045271de2516d415be71a776ea190d415973a0b57c23"},
+    {file = "pytube-11.0.1-py3-none-any.whl", hash = "sha256:d4dfea7394d7662edac3831432b349b2afac984e0d0bc4bdb611ec1f3fc16318"},
+    {file = "pytube-11.0.1.tar.gz", hash = "sha256:47643a6ff553cbc4d6be748ff14c9c45f79984e15005adff25d62b18110abe43"},
 ]
 regex = [
     {file = "regex-2021.8.3-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:8764a78c5464ac6bde91a8c87dd718c27c1cabb7ed2b4beaf36d3e8e390567f9"},
