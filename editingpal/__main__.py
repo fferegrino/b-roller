@@ -1,6 +1,9 @@
+from urllib.parse import urlparse
+
 import typer
 
 from editingpal.giphy import download_giphy
+from editingpal.pexels import download_pexels_video
 from editingpal.pixabay import download_pixabay_video
 from editingpal.youtube import download_youtube_audio, download_youtube_video
 
@@ -25,6 +28,36 @@ def pixabay(url: str):
 @app.command()
 def giphy(url: str):
     download_giphy(url)
+
+
+cli_fns = {
+    ("youtube.com", ""): download_youtube_video,
+    ("youtube.com", "video"): download_youtube_video,
+    ("youtube.com", "audio"): download_youtube_audio,
+    ("pixabay.com", ""): download_pixabay_video,
+    ("giphy.com", ""): download_giphy,
+    ("pexels.com", ""): download_pexels_video,
+}
+
+
+@app.command()
+def cli():
+    command = ""
+    while True:
+        print("Enter an url or q to exit")
+        command = input().strip()
+        if command == "q":
+            break
+
+        [str_url, *extras] = command.split()
+        extra = "".join(extras)
+        url = urlparse(str_url)
+
+        netloc = url.netloc[4:] if url.netloc.startswith("www.") else url.netloc
+
+        cli_fns[(netloc, extra)](str_url)
+        print(f"the content has been downloaded from {netloc}")
+    print("goodbye")
 
 
 if __name__ == "__main__":

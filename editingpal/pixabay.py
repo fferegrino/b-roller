@@ -1,4 +1,5 @@
 import os
+import re
 from urllib.parse import urlparse
 from urllib.request import urlretrieve
 
@@ -6,12 +7,14 @@ import requests
 
 pixabay_videos = ["large", "medium", "small", "tiny"]
 
-PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY")
+PIXABAY_API_KEY = os.environ["PIXABAY_API_KEY"]
+
+video_id_re = re.compile(r"(?P<video_id>\d+)\/?$")
 
 
 def download_pixabay_video(url):
-    parsed = urlparse(url)
-    video_id = [abc for abc in parsed.path.split("/") if abc][-1][3:]
+    match = video_id_re.search(url)
+    video_id = match.group().strip("/")
     result = requests.get(f"https://pixabay.com/api/videos/?key={PIXABAY_API_KEY}&id={video_id}")
     values = result.json()
     [hit] = values["hits"]
