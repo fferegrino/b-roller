@@ -5,6 +5,7 @@ import typer
 from editingpal.giphy import download_giphy
 from editingpal.pexels import download_pexels_video
 from editingpal.pixabay import download_pixabay_video
+from editingpal.unsplash import download_unsplash_picture
 from editingpal.youtube import download_youtube_audio, download_youtube_video
 
 app = typer.Typer(add_completion=False)
@@ -30,6 +31,11 @@ def giphy(url: str):
     download_giphy(url)
 
 
+@app.command()
+def unsplash(url: str):
+    download_unsplash_picture(url)
+
+
 cli_fns = {
     ("youtube.com", ""): download_youtube_video,
     ("youtube.com", "video"): download_youtube_video,
@@ -37,6 +43,7 @@ cli_fns = {
     ("pixabay.com", ""): download_pixabay_video,
     ("giphy.com", ""): download_giphy,
     ("pexels.com", ""): download_pexels_video,
+    ("unsplash.com", ""): download_unsplash_picture,
 }
 
 

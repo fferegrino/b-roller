@@ -2,7 +2,9 @@ import os
 
 import requests
 
-GIPHY_API_KEY = os.environ["GIPHY_API_KEY"]
+GIPHY_API_KEY = os.getenv("GIPHY_API_KEY")
+if GIPHY_API_KEY is None:
+    print("There is no API key for Giphy, this integration will not work")
 
 API_TEMPLATE = f"https://api.giphy.com/v1/gifs/{{}}?api_key={GIPHY_API_KEY}"
 DEFAULT_TEMPLATE = "https://media.giphy.com/media/{}/source.gif"
