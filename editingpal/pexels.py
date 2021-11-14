@@ -22,7 +22,7 @@ def download_pexels_video(url):
     result = requests.get(f"https://api.pexels.com/videos/videos/{video_id}", headers={"Authorization": PEXELS_API_KEY})
     values = result.json()
     video_files = values["video_files"]
-    video_resource = sorted(video_files, key=lambda vid: vid["width"] * vid["height"])[-1]
+    video_resource = sorted(video_files, key=lambda vid: (vid.get("width") or 0) * (vid.get("height") or 0))[-1]
     video_url = urlparse(video_resource["link"])
     if video_url.query:
         download = "&download=1"
