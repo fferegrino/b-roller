@@ -1,3 +1,4 @@
+import argparse
 from urllib.parse import urlparse
 
 import typer
@@ -47,6 +48,14 @@ cli_fns = {
 }
 
 
+parser = argparse.ArgumentParser(description="Process some integers.")
+
+parser.add_argument("url", type=str)
+parser.add_argument("-k", "--kind", type=str, default="", required=False)
+parser.add_argument("-s", "--start", type=str, default=None, required=False)
+parser.add_argument("-e", "--end", type=str, default=None, required=False)
+
+
 @app.command()
 def cli():
     command = ""
@@ -56,13 +65,14 @@ def cli():
         if command == "q":
             break
 
-        [str_url, *extras] = command.split()
-        extra = "".join(extras)
-        url = urlparse(str_url)
+        args = command.split()
+        parsed_args = parser.parse_args(args).__dict__
 
+        url = urlparse(parsed_args.pop("url"))
         netloc = url.netloc[4:] if url.netloc.startswith("www.") else url.netloc
 
-        cli_fns[(netloc, extra)](str_url)
+        download_fn = cli_fns[(netloc, parsed_args.pop("kind"))]
+        download_fn(url.geturl(), **parsed_args)
         print(f"the content has been downloaded from {netloc}")
     print("goodbye")
 

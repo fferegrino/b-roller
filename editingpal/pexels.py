@@ -16,7 +16,7 @@ video_id_re = re.compile(r"(?P<video_id>\d+)\/?$")
 # https://api.pexels.com/videos/videos/:id
 
 
-def download_pexels_video(url):
+def download_pexels_video(url, **kwargs):
     match = video_id_re.search(url)
     video_id = match.group().strip("/")
     result = requests.get(f"https://api.pexels.com/videos/videos/{video_id}", headers={"Authorization": PEXELS_API_KEY})

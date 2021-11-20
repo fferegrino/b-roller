@@ -6,13 +6,16 @@ import requests
 
 urls_sizes = ["raw", "full", "regular", "small", "thumb"]
 
-UNSPLASH_ACCESS_KEY = os.environ["UNSPLASH_ACCESS_KEY"]
+
+UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY")
+if UNSPLASH_ACCESS_KEY is None:
+    print("There is no API key for Unsplash, this integration will not work")
 
 
 video_id_re = re.compile(r"(?P<video_id>[\w-]+)\/?$")
 
 
-def download_unsplash_picture(url):
+def download_unsplash_picture(url, **kwargs):
     match = video_id_re.search(url)
     video_id = match.group().strip("/")
     response = requests.get(

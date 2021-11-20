@@ -10,7 +10,7 @@ API_TEMPLATE = f"https://api.giphy.com/v1/gifs/{{}}?api_key={GIPHY_API_KEY}"
 DEFAULT_TEMPLATE = "https://media.giphy.com/media/{}/source.gif"
 
 
-def download_giphy(url):
+def download_giphy(url, **kwargs):
 
     gif_name, _, gif_id = url.split("/")[-1].rpartition("-")
     breakpoint()

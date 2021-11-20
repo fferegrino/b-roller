@@ -14,7 +14,7 @@ if PIXABAY_API_KEY is None:
 video_id_re = re.compile(r"(?P<video_id>\d+)\/?$")
 
 
-def download_pixabay_video(url):
+def download_pixabay_video(url, **kwargs):
     match = video_id_re.search(url)
     video_id = match.group().strip("/")
     result = requests.get(f"https://pixabay.com/api/videos/?key={PIXABAY_API_KEY}&id={video_id}")

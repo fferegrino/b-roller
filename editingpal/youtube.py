@@ -17,13 +17,13 @@ def get_streams(url, only_video):
     return streams, title
 
 
-def download_youtube_video(url):
+def download_youtube_video(url, **kwargs):
     streams, title = get_streams(url, only_video=True)
     streams = sorted(streams, key=lambda stream: int(stream.resolution[:-1]), reverse=True)
     streams[0].download(filename=f"{title}_video.mp4")
 
 
-def download_youtube_audio(url):
+def download_youtube_audio(url, **kwargs):
     streams, title = get_streams(url, only_video=False)
     streams = sorted(streams, key=lambda stream: int(stream.abr[:-4]), reverse=True)
     streams[0].download(filename=f"{title}_audio.mp4")
