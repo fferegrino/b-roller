@@ -1,5 +1,6 @@
 .idea/
 .DS_store
+.env
 __pycache__/
 *.py[cod]
 *$py.class
