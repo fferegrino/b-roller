@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 import typer
 
 from editingpal.giphy import download_giphy
+from editingpal.iconfinder import download_icon
 from editingpal.pexels import download_pexels_video
 from editingpal.pixabay import download_pixabay_video
 from editingpal.unsplash import download_unsplash_picture
@@ -45,6 +46,7 @@ cli_fns = {
     ("giphy.com", ""): download_giphy,
     ("pexels.com", ""): download_pexels_video,
     ("unsplash.com", ""): download_unsplash_picture,
+    ("iconfinder.com", ""): download_icon,
 }
 
 
