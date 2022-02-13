@@ -13,13 +13,13 @@ edw = 'editingpal.__main__:app'
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pytube = "11.0.1"
+pytube = "^11"
 typer = "^0.3.2"
 python-slugify = "^5.0.2"
 requests = "^2.25.1"
 
 [tool.poetry.dev-dependencies]
-black = "^20.*"
+black = "21.7b0"
 flake8 = "^3.9.2"
 isort = "^5.9.2"
 pyproject-flake8 = "^0.0.1-alpha.2"
