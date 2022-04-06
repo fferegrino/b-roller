@@ -3,12 +3,12 @@ from urllib.parse import urlparse
 
 import typer
 
-from editingpal.giphy import download_giphy
-from editingpal.iconfinder import download_icon
-from editingpal.pexels import download_pexels_video
-from editingpal.pixabay import download_pixabay_video
-from editingpal.unsplash import download_unsplash_picture
-from editingpal.youtube import download_youtube_audio, download_youtube_video
+from asset_downloader.giphy import download_giphy
+from asset_downloader.iconfinder import download_icon
+from asset_downloader.pexels import download_pexels_video
+from asset_downloader.pixabay import download_pixabay_video
+from asset_downloader.unsplash import download_unsplash_picture
+from asset_downloader.youtube import download_youtube_audio, download_youtube_video
 
 app = typer.Typer(add_completion=False)
 
