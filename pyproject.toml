@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "asset-downloader"
-version = "0.1.1"
+version = "0.1.2"
 description = "My editing pal"
 authors = ["Antonio Feregrino <antonio.feregrino@gmail.com>"]
 license = "MIT"
