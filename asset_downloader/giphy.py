@@ -2,7 +2,7 @@ import os
 
 import requests
 
-GIPHY_API_KEY = os.getenv("GIPHY_API_KEY")
+GIPHY_API_KEY = os.getenv("ADW_GIPY_API_KEY")
 if GIPHY_API_KEY is None:
     print("There is no API key for Giphy, this integration will not work")
 

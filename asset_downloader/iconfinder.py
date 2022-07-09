@@ -5,7 +5,7 @@ import urllib
 import requests
 from slugify import slugify
 
-ICONFINDER_API_KEY = os.getenv("ICONFINDER_API_KEY")
+ICONFINDER_API_KEY = os.getenv("ADW_ICONFINDER_API_KEY")
 if ICONFINDER_API_KEY is None:
     print("There is no API key for Iconfinder, this integration will not work")
 

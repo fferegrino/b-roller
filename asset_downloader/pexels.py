@@ -7,7 +7,7 @@ import requests
 
 pixabay_videos = ["large", "medium", "small", "tiny"]
 
-PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
+PEXELS_API_KEY = os.getenv("ADW_PEXELS_API_KEY")
 if PEXELS_API_KEY is None:
     print("There is no API key for Pexels, this integration will not work")
 

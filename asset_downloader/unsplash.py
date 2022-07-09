@@ -7,7 +7,7 @@ import requests
 urls_sizes = ["raw", "full", "regular", "small", "thumb"]
 
 
-UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY")
+UNSPLASH_ACCESS_KEY = os.getenv("ADW_UNSPLASH_API_KEY")
 if UNSPLASH_ACCESS_KEY is None:
     print("There is no API key for Unsplash, this integration will not work")
 

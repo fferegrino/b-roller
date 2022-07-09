@@ -7,7 +7,7 @@ import requests
 
 pixabay_videos = ["large", "medium", "small", "tiny"]
 
-PIXABAY_API_KEY = os.getenv("PIXABAY_API_KEY")
+PIXABAY_API_KEY = os.getenv("ADW_PIXABAY_API_KEY")
 if PIXABAY_API_KEY is None:
     print("There is no API key for Pixabay, this integration will not work")
 
