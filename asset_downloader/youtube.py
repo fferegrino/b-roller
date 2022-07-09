@@ -1,3 +1,4 @@
+import ffmpeg
 from pytube import YouTube
 from pytube.streams import Stream
 from slugify import slugify
@@ -33,5 +34,14 @@ def download_video(video_id: str):
     audio = get_streams(video, "audio")
     video = get_streams(video, "video")
 
-    audio.download(filename=f"{name_slug}__{video_id}__audio.mp4")
-    video.download(filename=f"{name_slug}__{video_id}__video.mp4")
+    original_name = f"{name_slug}__{video_id}"
+
+    audio_file = f"{original_name}_audio.mp4"
+    video_file = f"{original_name}_video.mp4"
+
+    audio.download(filename=audio_file)
+    video.download(filename=video_file)
+
+    input_video = ffmpeg.input(video_file)
+    input_audio = ffmpeg.input(audio_file)
+    ffmpeg.concat(input_video, input_audio, v=1, a=1).output(f"./{original_name}.mp4").run()

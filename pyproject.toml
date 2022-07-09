@@ -18,6 +18,7 @@ pytube = "*"
 typer = "*"
 python-slugify = "*"
 requests = "*"
+ffmpeg-python = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 black = "*"
