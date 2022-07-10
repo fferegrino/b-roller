@@ -1,4 +1,6 @@
 import argparse
+import re
+from typing import Optional
 from urllib.parse import urlparse
 
 import typer
@@ -8,19 +10,28 @@ from asset_downloader.iconfinder import download_icon
 from asset_downloader.pexels import download_pexels_video
 from asset_downloader.pixabay import download_pixabay_video
 from asset_downloader.unsplash import download_unsplash_picture
-from asset_downloader.youtube import download_youtube_audio, download_youtube_video
+from asset_downloader.youtube import download_video
 
 app = typer.Typer(add_completion=False)
 
-
-@app.command()
-def video(url: str):
-    download_youtube_video(url)
+VIDEO_ID_REGEX = re.compile(r"(?P<video_id>[a-zA-Z0-9-_]+)$")
 
 
 @app.command()
-def audio(url: str):
-    download_youtube_audio(url)
+@app.command("yt")
+def youtube(
+    url: str = typer.Argument(..., help="A video id or a YouTube short/long url"),
+    start: Optional[str] = typer.Argument(default=None, help="The desired start of the video, format 00:00:00"),
+    end: Optional[str] = typer.Argument(default=None, help="The desired end of the video, format 00:00:00"),
+):
+    """
+    Download content from YouTube
+    """
+    if match := re.match(VIDEO_ID_REGEX, url):
+        values = match.groupdict()
+        download_video(values["video_id"], start_time=start, end_time=end)
+    else:
+        print(f'"{url}" does not look like a YouTube video')
 
 
 @app.command()
@@ -39,9 +50,9 @@ def unsplash(url: str):
 
 
 cli_fns = {
-    ("youtube.com", ""): download_youtube_video,
-    ("youtube.com", "video"): download_youtube_video,
-    ("youtube.com", "audio"): download_youtube_audio,
+    # ("youtube.com", ""): download_youtube_video,
+    # ("youtube.com", "video"): download_youtube_video,
+    # ("youtube.com", "audio"): download_youtube_audio,
     ("pixabay.com", ""): download_pixabay_video,
     ("giphy.com", ""): download_giphy,
     ("pexels.com", ""): download_pexels_video,
