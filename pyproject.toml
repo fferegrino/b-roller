@@ -21,7 +21,7 @@ requests = "*"
 
 [tool.poetry.dev-dependencies]
 black = "*"
-flake8 = "^3.9.2"
+flake8 = "^5.0.3"
 isort = "^5.9.2"
 pyproject-flake8 = "^0.0.1a4"
 bump2version = "^1.0.1"
