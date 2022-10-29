@@ -1,6 +1,6 @@
 import pytest
 
-from asset_downloader.youtube import get_video_id, to_hh_mm_ss
+from b_roller.youtube import get_video_id, to_hh_mm_ss
 
 
 @pytest.mark.parametrize(

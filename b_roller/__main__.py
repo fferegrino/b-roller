@@ -3,7 +3,7 @@ from typing import Optional
 
 import typer
 
-from asset_downloader.youtube import download_video, get_video_id, to_hh_mm_ss
+from b_roller.youtube import download_video, get_video_id, to_hh_mm_ss
 
 app = typer.Typer(add_completion=False)
 
