@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "b-roller"
-version = "0.1.4"
+version = "1.0.0"
 description = "Download resources from several sources across the web"
 readme = "readme.md"
 authors = ["Antonio Feregrino <antonio.feregrino@gmail.com>"]
