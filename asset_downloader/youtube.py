@@ -60,16 +60,15 @@ def get_streams(video: YouTube, kind: str) -> Stream:
     return sorted_streams[0]
 
 
-def download_video(video_id: str, start_time: Optional[str] = None, end_time: Optional[str] = None) -> None:
-    video = YouTube(f"https://www.youtube.com/watch?v={video_id}")
-    name_slug = slugify(video.title)
+def download_video(video_id: str, start_time: Optional[str] = None, end_time: Optional[str] = None) -> YouTube:
+    yt = YouTube(f"https://www.youtube.com/watch?v={video_id}")
+    name_slug = slugify(yt.title)
 
     original_name = f"{name_slug}__{video_id}"
     audio_file = f"{original_name}_audio.mp4"
     video_file = f"{original_name}_video.mp4"
-
-    audio = get_streams(video, "audio")
-    video = get_streams(video, "video")
+    audio = get_streams(yt, "audio")
+    video = get_streams(yt, "video")
 
     audio.download(filename=audio_file)
     video.download(filename=video_file)
@@ -78,6 +77,8 @@ def download_video(video_id: str, start_time: Optional[str] = None, end_time: Op
         ffmpeg_processing(audio_file, video_file, original_name, end_time, start_time)
     except FileNotFoundError:
         logging.warning("No ffmpeg is not available")
+
+    return yt
 
 
 def ffmpeg_processing(
@@ -95,4 +96,6 @@ def ffmpeg_processing(
         ffmpeg_arguments["to"] = end_time
     input_video = ffmpeg.input(video_file, **ffmpeg_arguments)
     input_audio = ffmpeg.input(audio_file, **ffmpeg_arguments)
-    ffmpeg.concat(input_video, input_audio, v=1, a=1).output(f"./{original_name}.mp4").run()
+    ffmpeg.concat(input_video, input_audio, v=1, a=1).output(
+        f"./{original_name}.mp4",
+    ).run(quiet=True, overwrite_output=True)
