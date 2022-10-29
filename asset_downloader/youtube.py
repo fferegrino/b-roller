@@ -1,4 +1,6 @@
+import logging
 from typing import Optional
+from urllib.parse import parse_qs, urlparse
 
 import ffmpeg
 from pytube import YouTube
@@ -7,6 +9,35 @@ from slugify import slugify
 
 video_itags = [137, 136, 135, 134, 133, 160]
 audio_itags = [140, 139]
+
+
+def to_hh_mm_ss(time):
+    if time is None:
+        return None
+    try:
+        [*possibly_hours, remaining_minutes, remaining_seconds] = [int(part) for part in time.split(":")]
+        if not possibly_hours:
+            hours = 0
+        else:
+            hours = possibly_hours[0]
+    except ValueError:
+        seconds = int(time)
+        minutes = seconds // 60
+        remaining_seconds = seconds % 60
+        hours = minutes // 60
+        remaining_minutes = minutes % 60
+    return f"{hours:02}:{remaining_minutes:02}:{remaining_seconds:02}"
+
+
+def get_video_id(url):
+    parts = urlparse(url)
+    if parts.netloc in {"www.youtube.com", "youtube.com"}:
+        if parts.path == "/watch":
+            return parse_qs(parts.query)["v"][0]
+    elif parts.netloc == "youtu.be":
+        return parts.path.lstrip("/")
+    else:
+        return None
 
 
 def get_streams(video: YouTube, kind: str) -> Stream:
@@ -43,7 +74,10 @@ def download_video(video_id: str, start_time: Optional[str] = None, end_time: Op
     audio.download(filename=audio_file)
     video.download(filename=video_file)
 
-    ffmpeg_processing(audio_file, video_file, original_name, end_time, start_time)
+    try:
+        ffmpeg_processing(audio_file, video_file, original_name, end_time, start_time)
+    except FileNotFoundError:
+        logging.warning("No ffmpeg is not available")
 
 
 def ffmpeg_processing(
@@ -53,6 +87,7 @@ def ffmpeg_processing(
     end_time: Optional[str] = None,
     start_time: Optional[str] = None,
 ) -> None:
+
     ffmpeg_arguments = {}
     if start_time:
         ffmpeg_arguments["ss"] = start_time

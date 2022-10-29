@@ -1,5 +1,4 @@
 import argparse
-import re
 from typing import Optional
 from urllib.parse import urlparse
 
@@ -10,26 +9,27 @@ from asset_downloader.iconfinder import download_icon
 from asset_downloader.pexels import download_pexels_video
 from asset_downloader.pixabay import download_pixabay_video
 from asset_downloader.unsplash import download_unsplash_picture
-from asset_downloader.youtube import download_video
+from asset_downloader.youtube import download_video, get_video_id, to_hh_mm_ss
 
 app = typer.Typer(add_completion=False)
-
-VIDEO_ID_REGEX = re.compile(r"(?P<video_id>[a-zA-Z0-9-_]+)$")
 
 
 @app.command()
 @app.command("yt")
 def youtube(
     url: str = typer.Argument(..., help="A video id or a YouTube short/long url"),
-    start: Optional[str] = typer.Argument(default=None, help="The desired start of the video, format 00:00:00"),
-    end: Optional[str] = typer.Argument(default=None, help="The desired end of the video, format 00:00:00"),
+    start: Optional[str] = typer.Argument(
+        default=None, help="The desired start of the video in seconds or the format 00:00:00"
+    ),
+    end: Optional[str] = typer.Argument(
+        default=None, help="The desired end of the video in seconds or the format 00:00:00"
+    ),
 ):
     """
     Download content from YouTube
     """
-    if match := re.match(VIDEO_ID_REGEX, url):
-        values = match.groupdict()
-        download_video(values["video_id"], start_time=start, end_time=end)
+    if video_id := get_video_id(url):
+        download_video(video_id, start_time=to_hh_mm_ss(start), end_time=to_hh_mm_ss(end))
     else:
         print(f'"{url}" does not look like a YouTube video')
 
