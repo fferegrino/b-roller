@@ -1,16 +1,16 @@
 [tool.poetry]
-name = "asset-downloader"
+name = "b-roller"
 version = "0.1.4"
 description = "Download resources from several sources across the web"
 readme = "readme.md"
 authors = ["Antonio Feregrino <antonio.feregrino@gmail.com>"]
 license = "MIT"
 packages = [
-    { include = "asset_downloader" },
+    { include = "b_roller" },
 ]
 
 [tool.poetry.scripts]
-adw = 'asset_downloader.__main__:app'
+broll = 'b_roller.__main__:app'
 
 [tool.poetry.dependencies]
 python = "^3.8"
