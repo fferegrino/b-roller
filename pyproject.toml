@@ -25,7 +25,7 @@ pytest = "^7.2.0"
 black = "*"
 flake8 = "^3.9.2"
 isort = "^5.9.2"
-pyproject-flake8 = "^0.0.1a4"
+pyproject-flake8 = "^3.9.2"
 bump2version = "^1.0.1"
 
 [build-system]
