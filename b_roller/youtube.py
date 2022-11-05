@@ -1,5 +1,6 @@
 import logging
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Union
 from urllib.parse import parse_qs, urlparse
 
 import ffmpeg
@@ -7,11 +8,14 @@ from pytube import YouTube
 from pytube.streams import Stream
 from slugify import slugify
 
-video_itags = [137, 136, 135, 134, 133, 160]
-audio_itags = [140, 139]
+VIDEO_ITAGS = [137, 136, 135, 134, 133, 160]
+AUDIO_ITAGS = [140, 139]
 
 
-def to_hh_mm_ss(time):
+def to_hh_mm_ss(time: Union[int, str, None]) -> str:
+    """
+    Convert any time defined as a string or seconds to the HH:MM:SS format
+    """
     if time is None:
         return None
     try:
@@ -29,7 +33,10 @@ def to_hh_mm_ss(time):
     return f"{hours:02}:{remaining_minutes:02}:{remaining_seconds:02}"
 
 
-def get_video_id(url):
+def get_video_id(url: str) -> Union[str, None]:
+    """
+    Extracts the ID from any YouTube-like url
+    """
     parts = urlparse(url)
     if parts.netloc in {"www.youtube.com", "youtube.com"}:
         if parts.path == "/watch":
@@ -40,41 +47,53 @@ def get_video_id(url):
         return None
 
 
-def get_streams(video: YouTube, kind: str) -> Stream:
-    args = {}
-    if kind == "video":
-        args["only_video"] = True
-        mime_type = "video/mp4"
-        streams = [stream for stream in video.streams.filter(**args) if stream.mime_type == mime_type]
-        sorted_streams = sorted(
-            streams, key=lambda stream: 1000 if stream.itag not in video_itags else video_itags.index(stream.itag)
-        )
-    elif kind == "audio":
-        args["only_audio"] = True
-        mime_type = "audio/mp4"
-        streams = [stream for stream in video.streams.filter(**args) if stream.mime_type == mime_type]
-        sorted_streams = sorted(
-            streams, key=lambda stream: 1000 if stream.itag not in audio_itags else audio_itags.index(stream.itag)
-        )
-
+def get_audio_stream(video):
+    mime_type = "audio/mp4"
+    streams = [stream for stream in video.streams.filter(only_audio=True) if stream.mime_type == mime_type]
+    sorted_streams = sorted(
+        streams, key=lambda stream: 1000 if stream.itag not in AUDIO_ITAGS else AUDIO_ITAGS.index(stream.itag)
+    )
     return sorted_streams[0]
 
 
-def download_video(video_id: str, start_time: Optional[str] = None, end_time: Optional[str] = None) -> YouTube:
+def get_video_streams(video: YouTube) -> Stream:
+    mime_type = "video/mp4"
+    streams = [stream for stream in video.streams.filter(only_video=True) if stream.mime_type == mime_type]
+    sorted_streams = sorted(
+        streams, key=lambda stream: 1000 if stream.itag not in VIDEO_ITAGS else VIDEO_ITAGS.index(stream.itag)
+    )
+    return sorted_streams[0]
+
+
+def download_audio_only(original_name, yt) -> Path:
+    audio_file = f"{original_name}_audio.mp4"
+    audio = get_audio_stream(yt)
+    audio.download(filename=audio_file)
+    return Path(audio_file)
+
+
+def download_video_only(original_name, yt) -> Path:
+    video_file = f"{original_name}_video.mp4"
+    video = get_video_streams(yt)
+    video.download(filename=video_file)
+    return Path(video_file)
+
+
+def download_video(
+    video_id: str, start_time: Optional[str] = None, end_time: Optional[str] = None, keep: bool = False
+) -> YouTube:
     yt = YouTube(f"https://www.youtube.com/watch?v={video_id}")
     name_slug = slugify(yt.title)
 
-    original_name = f"{name_slug}__{video_id}"
-    audio_file = f"{original_name}_audio.mp4"
-    video_file = f"{original_name}_video.mp4"
-    audio = get_streams(yt, "audio")
-    video = get_streams(yt, "video")
-
-    audio.download(filename=audio_file)
-    video.download(filename=video_file)
+    base_name = f"{name_slug}__{video_id}"
+    video_file = download_video_only(base_name, yt)
+    audio_file = download_audio_only(base_name, yt)
 
     try:
-        ffmpeg_processing(audio_file, video_file, original_name, end_time, start_time)
+        ffmpeg_processing(audio_file, video_file, base_name, end_time, start_time)
+        if not keep:
+            audio_file.unlink()
+            video_file.unlink()
     except FileNotFoundError:
         logging.warning("No ffmpeg is not available")
 
@@ -82,8 +101,8 @@ def download_video(video_id: str, start_time: Optional[str] = None, end_time: Op
 
 
 def ffmpeg_processing(
-    audio_file: str,
-    video_file: str,
+    audio_file: Path,
+    video_file: Path,
     original_name: str,
     end_time: Optional[str] = None,
     start_time: Optional[str] = None,
@@ -94,8 +113,8 @@ def ffmpeg_processing(
         ffmpeg_arguments["ss"] = start_time
     if end_time:
         ffmpeg_arguments["to"] = end_time
-    input_video = ffmpeg.input(video_file, **ffmpeg_arguments)
-    input_audio = ffmpeg.input(audio_file, **ffmpeg_arguments)
+    input_video = ffmpeg.input(str(video_file), **ffmpeg_arguments)
+    input_audio = ffmpeg.input(str(audio_file), **ffmpeg_arguments)
     ffmpeg.concat(input_video, input_audio, v=1, a=1).output(
         f"./{original_name}.mp4",
     ).run(quiet=True, overwrite_output=True)
