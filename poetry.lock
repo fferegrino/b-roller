@@ -290,7 +290,7 @@ unidecode = ["Unidecode (>=1.1.1)"]
 
 [[package]]
 name = "pytube"
-version = "12.1.0"
+version = "12.1.2"
 description = "Python 3 library for downloading YouTube Videos."
 category = "main"
 optional = false
@@ -497,8 +497,8 @@ python-slugify = [
     {file = "python_slugify-6.1.2-py2.py3-none-any.whl", hash = "sha256:7b2c274c308b62f4269a9ba701aa69a797e9bca41aeee5b3a9e79e36b6656927"},
 ]
 pytube = [
-    {file = "pytube-12.1.0-py3-none-any.whl", hash = "sha256:c2e4b1ffdf9eca4c287f881557a6b4f98dd287ecfa06e2e5d5936d39c5f4d8da"},
-    {file = "pytube-12.1.0.tar.gz", hash = "sha256:6de1f3a4cb125dd6ff912598c7e88a866325a63cc91755cae616f53c40ae5503"},
+    {file = "pytube-12.1.2-py3-none-any.whl", hash = "sha256:a844800002744f33107f4440543f9a5f1fd9fcd97dad35cf2dd4803212352d9a"},
+    {file = "pytube-12.1.2.tar.gz", hash = "sha256:2d34a484f81cae106ea84e8c00871f97dcc293e8ed8c074e65abc4119f02c98f"},
 ]
 requests = [
     {file = "requests-2.28.1-py3-none-any.whl", hash = "sha256:8fefa2a1a1365bf5520aac41836fbee479da67864514bdb821f31ce07ce65349"},
