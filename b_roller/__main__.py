@@ -5,6 +5,7 @@ from typing import Optional
 import typer
 
 from b_roller.credits import add_credit_url
+from b_roller.iconfinder import download_icon
 from b_roller.pexels import download_pexels_video
 from b_roller.youtube import download_video, get_video_id, to_hh_mm_ss
 
@@ -64,6 +65,22 @@ def pexels(
     if secrets := get_secrets():
         if api_key := secrets.get("PEXELS_API_KEY"):
             title, url = download_pexels_video(url, api_key)
+            if not no_credits:
+                add_credit_url(url, title)
+
+
+@app.command()
+@app.command("if")
+def iconfinder(
+    url: str = typer.Argument(..., help="The url for a Pexels video"),
+    no_credits: bool = typer.Option(False, "--no-credits", help="Do not add credits"),
+):
+    """
+    Download content from Iconfinder, remember that you need an API key
+    """
+    if secrets := get_secrets():
+        if api_key := secrets.get("ICONFINDER_API_KEY"):
+            title, url = download_icon(url, api_key)
             if not no_credits:
                 add_credit_url(url, title)
 
