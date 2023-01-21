@@ -7,4 +7,5 @@ __pycache__/
 dist/
 *.mp4
 .ipynb_checkpoints
-
+credits.csv
+.b-roller.secrets.json
