@@ -1,13 +1,11 @@
-from pathlib import Path
 from typing import Optional
 
 import typer
 
+from b_roller.credits import add_credit_url
 from b_roller.youtube import download_video, get_video_id, to_hh_mm_ss
 
 app = typer.Typer(add_completion=False)
-
-credits_file = Path("credits.tsv")
 
 
 @app.command()
@@ -22,6 +20,7 @@ def youtube(
     ),
     audio: bool = typer.Option(False, "--audio", help="Download only the audio"),
     video: bool = typer.Option(False, "--video", help="Download only the video"),
+    no_credits: bool = typer.Option(False, "--no-credits", help="Do not add credits"),
 ):
     """
     Download content from YouTube
@@ -34,19 +33,15 @@ def youtube(
             download = "video"
 
         video = download_video(video_id, start_time=to_hh_mm_ss(start), end_time=to_hh_mm_ss(end), download=download)
-        if credits_file.exists():
-            with open(credits_file, "a") as append:
-                append.write(f"{video.title}\t{video.watch_url}")
+        if not no_credits:
+            add_credit_url(video.watch_url, video.title)
     else:
         print(f'"{url}" does not look like a YouTube video')
 
 
 @app.command()
 def init():
-    if credits_file.exists():
-        pass
-    else:
-        credits_file.touch()
+    pass
 
 
 if __name__ == "__main__":
