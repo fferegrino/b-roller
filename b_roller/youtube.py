@@ -80,22 +80,25 @@ def download_video_only(original_name, yt) -> Path:
 
 
 def download_video(
-    video_id: str, start_time: Optional[str] = None, end_time: Optional[str] = None, keep: bool = False
+    video_id: str, start_time: Optional[str] = None, end_time: Optional[str] = None, download: str = "both"
 ) -> YouTube:
     yt = YouTube(f"https://www.youtube.com/watch?v={video_id}")
     name_slug = slugify(yt.title)
 
     base_name = f"{name_slug}__{video_id}"
-    video_file = download_video_only(base_name, yt)
-    audio_file = download_audio_only(base_name, yt)
-
-    try:
-        ffmpeg_processing(audio_file, video_file, base_name, end_time, start_time)
-        if not keep:
+    if download == "both":
+        video_file = download_video_only(base_name, yt)
+        audio_file = download_audio_only(base_name, yt)
+        try:
+            ffmpeg_processing(audio_file, video_file, base_name, end_time, start_time)
             audio_file.unlink()
             video_file.unlink()
-    except FileNotFoundError:
-        logging.warning("No ffmpeg is not available")
+        except FileNotFoundError:
+            logging.warning("No ffmpeg is not available")
+    elif download == "audio":
+        audio_file = download_audio_only(base_name, yt)
+    elif download == "video":
+        video_file = download_video_only(base_name, yt)
 
     return yt
 

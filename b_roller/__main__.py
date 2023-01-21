@@ -20,12 +20,20 @@ def youtube(
     end: Optional[str] = typer.Argument(
         default=None, help="The desired end of the video in seconds or the format 00:00:00"
     ),
+    audio: bool = typer.Option(False, "--audio", help="Download only the audio"),
+    video: bool = typer.Option(False, "--video", help="Download only the video"),
 ):
     """
     Download content from YouTube
     """
     if video_id := get_video_id(url):
-        video = download_video(video_id, start_time=to_hh_mm_ss(start), end_time=to_hh_mm_ss(end))
+        download = "both"
+        if audio:
+            download = "audio"
+        elif video:
+            download = "video"
+
+        video = download_video(video_id, start_time=to_hh_mm_ss(start), end_time=to_hh_mm_ss(end), download=download)
         if credits_file.exists():
             with open(credits_file, "a") as append:
                 append.write(f"{video.title}\t{video.watch_url}")
