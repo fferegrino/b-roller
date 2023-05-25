@@ -110,7 +110,6 @@ def ffmpeg_processing(
     end_time: Optional[str] = None,
     start_time: Optional[str] = None,
 ) -> None:
-
     ffmpeg_arguments = {}
     if start_time:
         ffmpeg_arguments["ss"] = start_time
