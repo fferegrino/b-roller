@@ -1,4 +1,5 @@
 import logging
+import shutil
 from pathlib import Path
 from typing import Optional, Union
 from urllib.parse import parse_qs, urlparse
@@ -8,8 +9,12 @@ from pytube import YouTube
 from pytube.streams import Stream
 from slugify import slugify
 
+from b_roller.settings import cache
+
 VIDEO_ITAGS = [137, 136, 135, 134, 133, 160]
 AUDIO_ITAGS = [140, 139]
+
+logger = logging.getLogger(__name__)
 
 
 def to_hh_mm_ss(time: Union[int, str, None]) -> str:
@@ -66,21 +71,33 @@ def get_video_streams(video: YouTube) -> Stream:
 
 
 def download_audio_only(original_name, yt) -> Path:
-    audio_file = f"{original_name}_audio.mp4"
+    audio_file = cache / f"{original_name}_audio.mp4"
+    logger.debug("Downloading audio")
+    if audio_file.exists():
+        logger.info("Using cached audio")
+        return audio_file
     audio = get_audio_stream(yt)
     audio.download(filename=audio_file)
     return Path(audio_file)
 
 
 def download_video_only(original_name, yt) -> Path:
-    video_file = f"{original_name}_video.mp4"
+    video_file = cache / f"{original_name}_video.mp4"
+    logger.debug("Downloading video")
+    if video_file.exists():
+        logger.info("Using cached video")
+        return video_file
     video = get_video_streams(yt)
     video.download(filename=video_file)
     return Path(video_file)
 
 
 def download_video(
-    video_id: str, start_time: Optional[str] = None, end_time: Optional[str] = None, download: str = "both"
+    video_id: str,
+    start_time: Optional[str] = None,
+    end_time: Optional[str] = None,
+    download: str = "both",
+    output_path: Optional[Path] = None,
 ) -> YouTube:
     yt = YouTube(f"https://www.youtube.com/watch?v={video_id}")
     name_slug = slugify(yt.title)
@@ -90,15 +107,18 @@ def download_video(
         video_file = download_video_only(base_name, yt)
         audio_file = download_audio_only(base_name, yt)
         try:
-            ffmpeg_processing(audio_file, video_file, base_name, end_time, start_time)
-            audio_file.unlink()
-            video_file.unlink()
+            logger.info("Merging audio and video")
+            result = ffmpeg_processing(audio_file, video_file, base_name, end_time, start_time)
         except FileNotFoundError:
             logging.warning("No ffmpeg is not available")
     elif download == "audio":
-        audio_file = download_audio_only(base_name, yt)
+        result = download_audio_only(base_name, yt)
     elif download == "video":
-        video_file = download_video_only(base_name, yt)
+        result = download_video_only(base_name, yt)
+
+    output_file = (output_path or Path.cwd()) / f"{base_name}.mp4"
+    logger.debug(f"Downloaded to {output_file}")
+    shutil.copy(result, output_file)
 
     return yt
 
@@ -110,13 +130,32 @@ def ffmpeg_processing(
     end_time: Optional[str] = None,
     start_time: Optional[str] = None,
 ) -> None:
+    output_file = cache / f"{original_name}.mp4"
+    if not output_file.exists():
+        logger.info("Using cached result")
+
+        input_video = ffmpeg.input(str(video_file))
+        input_audio = ffmpeg.input(str(audio_file))
+
+        ffmpeg.concat(input_video, input_audio, v=1, a=1).output(
+            str(output_file),
+        ).run(quiet=True, overwrite_output=True)
+
     ffmpeg_arguments = {}
     if start_time:
-        ffmpeg_arguments["ss"] = start_time
+        ffmpeg_arguments["start"] = start_time
     if end_time:
-        ffmpeg_arguments["to"] = end_time
-    input_video = ffmpeg.input(str(video_file), **ffmpeg_arguments)
-    input_audio = ffmpeg.input(str(audio_file), **ffmpeg_arguments)
-    ffmpeg.concat(input_video, input_audio, v=1, a=1).output(
-        f"./{original_name}.mp4",
-    ).run(quiet=True, overwrite_output=True)
+        ffmpeg_arguments["end"] = end_time
+
+    if ffmpeg_arguments:
+        message = f"Trimming video from {start_time or '-'} to {end_time or '-'}"
+        logger.info(message)
+        result = cache / f"{original_name}_trimmed.mp4"
+
+        ffmpeg.input(str(output_file)).trim(**ffmpeg_arguments).setpts("PTS-STARTPTS").output(
+            str(result),
+        ).run(quiet=True, overwrite_output=True)
+
+        output_file = result
+
+    return output_file

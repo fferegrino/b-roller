@@ -1,4 +1,5 @@
 import json
+import logging
 from pathlib import Path
 from typing import Optional
 
@@ -86,8 +87,41 @@ def iconfinder(
 
 
 @app.command()
+def clear_cache():
+    """
+    Clear the cache
+    """
+    from b_roller.settings import cache
+
+    if cache.exists():
+        for file in cache.iterdir():
+            file.unlink()
+    else:
+        cache.mkdir()
+
+
+@app.command()
 def init():
     pass
+
+
+@app.callback()
+def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True, help="Increase verbosity")):
+    log_level = logging.WARNING
+    if verbose > 1:
+        log_level = logging.DEBUG
+    elif verbose > 0:
+        log_level = logging.INFO
+
+    logger = logging.getLogger("b_roller")
+    logger.setLevel(log_level)
+    handler = logging.StreamHandler()
+    logger.addHandler(handler)
+
+    from b_roller.settings import cache
+
+    cache.mkdir(exist_ok=True)
+    logger.debug(f"Cache: {cache}")
 
 
 if __name__ == "__main__":
