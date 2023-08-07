@@ -103,36 +103,50 @@ def download_video(
     name_slug = slugify(yt.title)
 
     base_name = f"{name_slug}__{video_id}"
+
+    extension = "mp3" if download == "audio" else "mp4"
+
     if download == "both":
         video_file = download_video_only(base_name, yt)
         audio_file = download_audio_only(base_name, yt)
         try:
             logger.info("Merging audio and video")
-            result = ffmpeg_processing(audio_file, video_file, base_name, end_time, start_time)
+            result = concatenate_video(audio_file, video_file, base_name)
+            result = trim_video(result, end_time, start_time)
         except FileNotFoundError:
             logging.warning("No ffmpeg is not available")
     elif download == "audio":
         result = download_audio_only(base_name, yt)
+        result = repackage_audio(result)
     elif download == "video":
         result = download_video_only(base_name, yt)
+        result = trim_video(result, end_time, start_time)
 
-    output_file = (output_path or Path.cwd()) / f"{base_name}.mp4"
+    output_file = (output_path or Path.cwd()) / f"{base_name}.{extension}"
     logger.debug(f"Downloaded to {output_file}")
     shutil.copy(result, output_file)
 
     return yt
 
 
-def ffmpeg_processing(
+def repackage_audio(audio_file: Path) -> Path:
+    logger.info("Repackaging audio")
+    result = cache / f"{audio_file.stem}_repackaged.mp3"
+    if result.exists():
+        logger.info("Using cached result")
+        return result
+    ffmpeg.input(str(audio_file)).output(str(result)).run(quiet=False, overwrite_output=True)
+    return result
+
+
+def concatenate_video(
     audio_file: Path,
     video_file: Path,
     original_name: str,
-    end_time: Optional[str] = None,
-    start_time: Optional[str] = None,
 ) -> None:
     output_file = cache / f"{original_name}.mp4"
     if not output_file.exists():
-        logger.info("Using cached result")
+        logger.info("Downloading video")
 
         input_video = ffmpeg.input(str(video_file))
         input_audio = ffmpeg.input(str(audio_file))
@@ -141,6 +155,14 @@ def ffmpeg_processing(
             str(output_file),
         ).run(quiet=True, overwrite_output=True)
 
+    return output_file
+
+
+def trim_video(
+    video_file: Path,
+    end_time: Optional[str] = None,
+    start_time: Optional[str] = None,
+):
     ffmpeg_arguments = {}
     if start_time:
         ffmpeg_arguments["start"] = start_time
@@ -150,12 +172,12 @@ def ffmpeg_processing(
     if ffmpeg_arguments:
         message = f"Trimming video from {start_time or '-'} to {end_time or '-'}"
         logger.info(message)
-        result = cache / f"{original_name}_trimmed.mp4"
-
-        ffmpeg.input(str(output_file)).trim(**ffmpeg_arguments).setpts("PTS-STARTPTS").output(
+        result = cache / f"{video_file.stem}_trimmed.mp4"
+        logger.debug(f"Original video: {video_file}")
+        ffmpeg.input(str(video_file)).trim(**ffmpeg_arguments).setpts("PTS-STARTPTS").output(
             str(result),
-        ).run(quiet=True, overwrite_output=True)
+        ).run(overwrite_output=True)
 
-        output_file = result
+        video_file = result
 
-    return output_file
+    return video_file
