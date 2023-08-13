@@ -7,6 +7,7 @@ authors = ["Antonio Feregrino <antonio.feregrino@gmail.com>"]
 license = "MIT"
 packages = [
     { include = "b_roller" },
+    { include = "pytube", from = "pytube" },
 ]
 
 [tool.poetry.scripts]
@@ -14,7 +15,6 @@ broll = 'b_roller.__main__:app'
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pytube = "*"
 typer = "*"
 python-slugify = "*"
 requests = "*"
