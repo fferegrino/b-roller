@@ -6,6 +6,9 @@ on:
     branches-ignore:
       - main
 
+env:
+  MY_VIDEO: "https://www.youtube.com/watch?v=19eanlakPn8"
+
 jobs:
   check:
     name: Check style
@@ -30,3 +33,5 @@ jobs:
       run: isort . --check-only
     - name: Run Black
       run: black . --check
+    - name: Test video download
+      run: broll yt ${{ env.MY_VIDEO }}
