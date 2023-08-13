@@ -125,5 +125,4 @@ def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True, help=
 
 
 if __name__ == "__main__":
-    print(get_secrets())
-    # app()
+    app()
