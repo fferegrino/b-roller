@@ -33,5 +33,7 @@ jobs:
       run: isort . --check-only
     - name: Run Black
       run: black . --check
+    - uses: FedericoCarboni/setup-ffmpeg@v2
+      id: setup-ffmpeg
     - name: Test video download
       run: broll yt ${{ env.MY_VIDEO }}
