@@ -5,11 +5,11 @@ from typing import Optional, Union
 from urllib.parse import parse_qs, urlparse
 
 import ffmpeg
-from pytube import YouTube
-from pytube.streams import Stream
 from slugify import slugify
 
 from b_roller.settings import cache
+from pytube import YouTube
+from pytube.streams import Stream
 
 VIDEO_ITAGS = [137, 136, 135, 134, 133, 160]
 AUDIO_ITAGS = [140, 139]

@@ -6,12 +6,17 @@ on:
     branches-ignore:
       - main
 
+env:
+  MY_VIDEO: "https://www.youtube.com/watch?v=19eanlakPn8"
+
 jobs:
   check:
     name: Check style
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: 'true'
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
@@ -28,3 +33,7 @@ jobs:
       run: isort . --check-only
     - name: Run Black
       run: black . --check
+    - uses: FedericoCarboni/setup-ffmpeg@v2
+      id: setup-ffmpeg
+    - name: Test video download
+      run: broll yt ${{ env.MY_VIDEO }}

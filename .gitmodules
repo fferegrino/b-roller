@@ -1,0 +1,3 @@
+[submodule "pytube"]
+	path = pytube
+	url = git@github.com:fferegrino/pytube.git
