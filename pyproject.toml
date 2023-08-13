@@ -41,6 +41,7 @@ exclude = '''
       \.eggs         # exclude a few common directories in the
     | \.git          # root of the project
     | \.venv          # root of the project
+    | pytube          # not my project
   )/
 )
 '''
@@ -50,12 +51,14 @@ max-line-length = 120
 per-file-ignores = [
 ]
 exclude = [
-    ".venv"
+    ".venv",
+    "pytube",
 ]
 
 [tool.isort]
 skip_glob = [
-    ".venv"
+    ".venv",
+    "pytube",
 ]
 
 # Structure
