@@ -4,6 +4,8 @@ from pathlib import Path
 from typing import Optional
 
 import typer
+from rich.logging import RichHandler
+from typer.main import get_command
 
 from b_roller.credits import add_credit_url
 from b_roller.iconfinder import download_icon
@@ -11,6 +13,8 @@ from b_roller.pexels import download_pexels_video
 from b_roller.youtube import download_video, get_video_id, to_hh_mm_ss
 
 app = typer.Typer(add_completion=False)
+
+logger = logging.getLogger(__name__)
 
 
 def get_secrets():
@@ -86,6 +90,35 @@ def iconfinder(
                 add_credit_url(url, title)
 
 
+def decide_command(url: str):
+    if "youtube" in url:
+        return "yt"
+    elif "pexels" in url:
+        return "px"
+    elif "iconfinder" in url:
+        return "if"
+    else:
+        return None
+
+
+@app.command()
+def cli():
+    while True:
+        try:
+            command = input("b-roller> ")
+            if command.lower() == "quit" or command.lower() == "exit" or command.lower() == "q":
+                break
+            else:
+                inner_command = decide_command(command)
+                actual_app_command = [inner_command, *command.split(" ")]
+                app(actual_app_command)
+        except SystemExit:
+            pass
+        except KeyboardInterrupt:
+            print("\nGoodbye!")
+            break
+
+
 @app.command()
 def clear_cache():
     """
@@ -115,7 +148,7 @@ def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True, help=
 
     logger = logging.getLogger("b_roller")
     logger.setLevel(log_level)
-    handler = logging.StreamHandler()
+    handler = RichHandler(rich_tracebacks=True, show_time=False)
     logger.addHandler(handler)
 
     from b_roller.settings import cache
