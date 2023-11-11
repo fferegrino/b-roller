@@ -1,10 +1,13 @@
+import hashlib
 import logging
 import shutil
+from importlib import resources as importlib_resources
 from pathlib import Path
 from typing import Optional, Union
 from urllib.parse import parse_qs, urlparse
 
 import ffmpeg
+from PIL import Image, ImageDraw, ImageFont
 from slugify import slugify
 
 from b_roller.settings import cache
@@ -52,6 +55,39 @@ def get_video_id(url: str) -> Union[str, None]:
         return None
 
 
+def make_watermark(watermark_text: str):
+    hashed_text = hashlib.md5(watermark_text.encode()).hexdigest()
+    watermark_file = cache / f"{hashed_text}.png"
+
+    if watermark_file.exists():
+        logger.info("Using cached watermark")
+        return watermark_file
+
+    back_ground_color = (230, 230, 230, 0)
+    white_font_color = (255, 255, 255, 255)
+    black_font_color = (0, 0, 0, 255)
+    font_size = 35
+    shadow_offset = 2
+
+    padding = 20
+    img = Image.new("RGBA", (1, 1), back_ground_color)
+    draw = ImageDraw.Draw(img)
+    font_path = importlib_resources.path("b_roller.fonts", "Oswald-Medium.ttf")
+    font = ImageFont.truetype(str(font_path), font_size)
+
+    (top, left, bottom, right) = draw.textbbox((0, 0), watermark_text, font=font)
+
+    img = Image.new(
+        "RGBA", (shadow_offset + bottom + (2 * padding), shadow_offset + right + (2 * padding)), back_ground_color
+    )
+    draw = ImageDraw.Draw(img)
+    draw.text((padding + shadow_offset, padding + shadow_offset), watermark_text, black_font_color, font=font)
+    draw.text((padding, padding), watermark_text, white_font_color, font=font)
+
+    img.save(str(watermark_file), "PNG")
+    return watermark_file
+
+
 def get_audio_stream(video):
     mime_type = "audio/mp4"
     streams = [stream for stream in video.streams.filter(only_audio=True) if stream.mime_type == mime_type]
@@ -81,15 +117,34 @@ def download_audio_only(original_name, yt) -> Path:
     return Path(audio_file)
 
 
-def download_video_only(original_name, yt) -> Path:
-    video_file = cache / f"{original_name}_video.mp4"
+def download_video_only(original_name, yt, watermark_file) -> Path:
+    watermarked_file_name = cache / f"wm_{original_name}_video.mp4"
+    in_file_name = cache / f"original_{original_name}_video.mp4"
+
     logger.debug("Downloading video")
-    if video_file.exists():
+    if watermarked_file_name.exists():
+        logger.info("Using watermarked cached video")
+        return watermarked_file_name
+
+    if in_file_name.exists():
         logger.info("Using cached video")
-        return video_file
+        return in_file_name
+
     video = get_video_streams(yt)
-    video.download(filename=video_file)
-    return Path(video_file)
+    video.download(filename=in_file_name)
+
+    try:
+        logger.info("Adding watermark")
+
+        ffmpeg.input(in_file_name).output(
+            str(watermarked_file_name),
+            vf="movie=" + str(watermark_file) + " [watermark]; [in][watermark] overlay=W-w-0:H-h-0 [out]",
+        ).run(quiet=True, overwrite_output=True)
+    except FileNotFoundError:
+        logging.warning("No ffmpeg is not available")
+        return Path(in_file_name)
+
+    return Path(watermarked_file_name)
 
 
 def download_video(
@@ -106,8 +161,10 @@ def download_video(
 
     extension = "mp3" if download == "audio" else "mp4"
 
+    watermark_file = make_watermark(f"youtu.be/{video_id} - {yt.title}")
+
     if download == "both":
-        video_file = download_video_only(base_name, yt)
+        video_file = download_video_only(base_name, yt, watermark_file)
         audio_file = download_audio_only(base_name, yt)
         try:
             logger.info("Merging audio and video")
@@ -119,7 +176,7 @@ def download_video(
         result = download_audio_only(base_name, yt)
         result = repackage_audio(result)
     elif download == "video":
-        result = download_video_only(base_name, yt)
+        result = download_video_only(base_name, yt, watermark_file)
         result = trim_video(result, end_time, start_time)
 
     output_file = (output_path or Path.cwd()) / f"{base_name}.{extension}"
@@ -135,7 +192,7 @@ def repackage_audio(audio_file: Path) -> Path:
     if result.exists():
         logger.info("Using cached result")
         return result
-    ffmpeg.input(str(audio_file)).output(str(result)).run(quiet=False, overwrite_output=True)
+    ffmpeg.input(str(audio_file)).output(str(result)).run(quiet=True, overwrite_output=True)
     return result
 
 
@@ -143,7 +200,7 @@ def concatenate_video(
     audio_file: Path,
     video_file: Path,
     original_name: str,
-) -> None:
+) -> Path:
     output_file = cache / f"{original_name}.mp4"
     if not output_file.exists():
         logger.info("Downloading video")
