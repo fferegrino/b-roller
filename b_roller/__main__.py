@@ -157,5 +157,16 @@ def callback(verbose: int = typer.Option(0, "--verbose", "-v", count=True, help=
     logger.debug(f"Cache: {cache}")
 
 
+@app.command()
+def from_file(file: Path):
+    with open(file, "r") as read:
+        for line in read:
+            line = line.strip()
+            if line:
+                if video_id := get_video_id(line):
+                    video = download_video(video_id)
+                    add_credit_url(video.watch_url, video.title)
+
+
 if __name__ == "__main__":
     app()
