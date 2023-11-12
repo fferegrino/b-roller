@@ -5,12 +5,11 @@ from typing import Optional
 
 import typer
 from rich.logging import RichHandler
-from typer.main import get_command
 
 from b_roller.credits import add_credit_url
 from b_roller.iconfinder import download_icon
 from b_roller.pexels import download_pexels_video
-from b_roller.youtube import download_video, get_video_id, to_hh_mm_ss
+from b_roller.youtube import download_video, get_video_id
 
 app = typer.Typer(add_completion=False)
 
@@ -39,6 +38,7 @@ def youtube(
     ),
     audio: bool = typer.Option(False, "--audio", help="Download only the audio"),
     video: bool = typer.Option(False, "--video", help="Download only the video"),
+    name: Optional[str] = typer.Option(None, "--name", help="Name to save the video with"),
     no_credits: bool = typer.Option(False, "--no-credits", help="Do not add credits"),
 ):
     """
@@ -51,7 +51,7 @@ def youtube(
         elif video:
             download = "video"
 
-        video = download_video(video_id, start_time=to_hh_mm_ss(start), end_time=to_hh_mm_ss(end), download=download)
+        video = download_video(video_id, start_time=start, end_time=end, kind=download, name=name)
         if not no_credits:
             add_credit_url(video.watch_url, video.title)
     else:

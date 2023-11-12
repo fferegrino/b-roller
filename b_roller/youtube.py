@@ -151,19 +151,23 @@ def download_video(
     video_id: str,
     start_time: Optional[str] = None,
     end_time: Optional[str] = None,
-    download: str = "both",
+    kind: str = "both",
     output_path: Optional[Path] = None,
+    name: Optional[str] = None,
 ) -> YouTube:
+    start_time = to_hh_mm_ss(start_time)
+    end_time = to_hh_mm_ss(end_time)
+
     yt = YouTube(f"https://www.youtube.com/watch?v={video_id}")
     name_slug = slugify(yt.title)
 
     base_name = f"{name_slug}__{video_id}"
 
-    extension = "mp3" if download == "audio" else "mp4"
+    extension = "mp3" if kind == "audio" else "mp4"
 
     watermark_file = make_watermark(f"youtu.be/{video_id} - {yt.title}")
 
-    if download == "both":
+    if kind == "both":
         video_file = download_video_only(base_name, yt, watermark_file)
         audio_file = download_audio_only(base_name, yt)
         try:
@@ -172,14 +176,15 @@ def download_video(
             result = trim_video(result, end_time, start_time)
         except FileNotFoundError:
             logging.warning("No ffmpeg is not available")
-    elif download == "audio":
+    elif kind == "audio":
         result = download_audio_only(base_name, yt)
         result = repackage_audio(result)
-    elif download == "video":
+    elif kind == "video":
         result = download_video_only(base_name, yt, watermark_file)
         result = trim_video(result, end_time, start_time)
 
-    output_file = (output_path or Path.cwd()) / f"{base_name}.{extension}"
+    final_name = name or base_name
+    output_file = (output_path or Path.cwd()) / f"{final_name}.{extension}"
     logger.debug(f"Downloaded to {output_file}")
     shutil.copy(result, output_file)
 
@@ -233,7 +238,7 @@ def trim_video(
         logger.debug(f"Original video: {video_file}")
         ffmpeg.input(str(video_file)).trim(**ffmpeg_arguments).setpts("PTS-STARTPTS").output(
             str(result),
-        ).run(overwrite_output=True)
+        ).run(quiet=True, overwrite_output=True)
 
         video_file = result
 
