@@ -72,8 +72,8 @@ def make_watermark(watermark_text: str):
     padding = 20
     img = Image.new("RGBA", (1, 1), back_ground_color)
     draw = ImageDraw.Draw(img)
-    font_path = importlib_resources.path("b_roller.fonts", "Oswald-Medium.ttf")
-    font = ImageFont.truetype(str(font_path), font_size)
+    with importlib_resources.path("b_roller.fonts", "Oswald-Medium.ttf") as font_path:
+        font = ImageFont.truetype(str(font_path), font_size)
 
     (top, left, bottom, right) = draw.textbbox((0, 0), watermark_text, font=font)
 
